@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors');
 const http = require('http');
 const server = http.createServer(app);
+const {createComment} = require("./utils/createComment");
 
 const corsOptions = {
     origin: '*',
@@ -24,9 +25,18 @@ const io = require('socket.io')(server, {
 io.on('connection', (socket) => {
     console.log('a user connected');
 
-    socket.on('newComment', (comment) => {
+    socket.on('subscribe', (reviewId) => {
+        socket.join(reviewId);
+    });
 
-        io.emit('commentAdded', comment);
+    socket.on('unsubscribe', (reviewId) => {
+        socket.leave(reviewId);
+    });
+
+    socket.on('newComment', async (data) => {
+        const {reviewId: review_id, userId: author_id, comment: body} = data
+        await createComment(review_id, author_id, body)
+        io.to(review_id).emit('commentAdded', "comment added");
     });
 
     socket.on('disconnect', () => {
