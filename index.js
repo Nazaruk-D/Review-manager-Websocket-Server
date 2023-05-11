@@ -6,11 +6,7 @@ const server = http.createServer(app);
 const {createComment} = require("./utils/createComment");
 const PORT = process.env.PORT || 8080;
 
-app.use(cors({
-    origin: "https://review-manager-rust.vercel.app/",
-    headers: ["Content-Type"],
-    credentials: true,
-}));
+app.use(cors({origin: ['http://localhost:3000', 'https://review-manager-rust.vercel.app/'], credentials: true}))
 
 const io = require('socket.io')(server, {
     cors: {
