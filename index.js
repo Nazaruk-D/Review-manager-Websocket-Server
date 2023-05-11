@@ -4,20 +4,13 @@ const cors = require('cors');
 const http = require('http');
 const server = http.createServer(app);
 const {createComment} = require("./utils/createComment");
+const PORT = process.env.PORT || 8080;
 
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
-
-const corsOptions = {
-    origin: '*',
-    methods: ['GET', 'POST'],
-    optionsSuccessStatus: 200,
-};
-
-app.use(cors(corsOptions));
+app.use(cors({
+    origin: "https://review-manager-rust.vercel.app/",
+    headers: ["Content-Type"],
+    credentials: true,
+}));
 
 const io = require('socket.io')(server, {
     cors: {
@@ -51,6 +44,6 @@ io.on('connection', (socket) => {
 });
 
 
-server.listen(8080, () => {
-    console.log('Server started on port 8080');
+server.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
 });
